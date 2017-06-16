@@ -1,0 +1,12 @@
+{
+    "require": {
+        "php": ">=7.0",
+        "ext-curl": "*",
+        "ext-mongodb": "*",
+        "mongodb/mongodb": "~1.0.0",
+        "google/apiclient": "~2.0",
+        "maknz/slack": "~1.7",
+        "guzzlehttp/guzzle": "~6.2"
+    }
+}
+
