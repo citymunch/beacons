@@ -96,7 +96,7 @@ function createAttachments(BSONDocument $beacon): void {
         $beaconAttachment = [
             'namespacedType' => $namespacedType,
             'data' => [
-                'title' => $event['discount'] . '% off at ' . $restaurant['name'] . ' with CityMunch!',
+                'title' => $event['discount'] . '% off at ' . $restaurant['name'] . '!',
                 'url' => $config['urlShortenerBase'] . '/b/' . $restaurant['id'],
                 'targeting' => [
                     'startDate' => $event['date'],
