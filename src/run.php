@@ -76,6 +76,7 @@ function createAttachments(BSONDocument $beacon): void {
     foreach ($body['events'] as $row) {
         $event = $row['event'];
         $restaurant = $row['restaurant'];
+        $offer = $row['offer'];
 
         if ($event['isActiveOnDate'] !== true) {
             continue;
@@ -84,6 +85,9 @@ function createAttachments(BSONDocument $beacon): void {
             continue;
         }
         if ($event['coversRemaining'] === 0) {
+            continue;
+        }
+        if ($offer['type'] !== 'PERCENT_OFF_ANY_FOOD') {
             continue;
         }
 
