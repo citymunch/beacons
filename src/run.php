@@ -19,7 +19,6 @@ foreach ($beacons as $beacon) {
         queueSlackMessage($e->getMessage());
     }
 
-    queueSlackMessage('Beacon manager finished running');
     postSlackMessageQueue();
 }
 
@@ -121,14 +120,6 @@ function createAttachments(BSONDocument $beacon): void {
         $alreadyExists = false;
         foreach ($existingBeaconAttachments as $existing) {
             if ($existing['data'] === $toCreateOrKeep['base64Data']) {
-                queueSlackMessage(
-                    'Notification already exists for ' . $toCreateOrKeep['discount'] . '% off'
-                        . ' at ' . $toCreateOrKeep['restaurant']['name']
-                        . ' on ' . $toCreateOrKeep['data']['targeting']['startDate']
-                        . ' at ' . $toCreateOrKeep['data']['targeting']['startTimeOfDay']
-                        . '-' . $toCreateOrKeep['data']['targeting']['endTimeOfDay']
-                        . ' for beacon "' . $beacon['friendlyName'] . '"'
-                );
                 $alreadyExists = true;
                 break;
             }

@@ -114,6 +114,11 @@ function queueSlackMessage(string $message): void {
 function postSlackMessageQueue(): void {
     global $config, $slackMessageQueue;
 
+    if (count($slackMessageQueue) === 0) {
+        echo "Nothing to post to Slack\n";
+        return;
+    }
+
     $settings = [
         'username' => 'Beacon manager',
         'link_names' => false,
