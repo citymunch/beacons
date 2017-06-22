@@ -78,6 +78,19 @@ function createAttachments(BSONDocument $beacon): void {
         $restaurant = $row['restaurant'];
         $offer = $row['offer'];
 
+        if (isset($beacon['limitedToOffers']) && is_iterable($beacon['limitedToOffers'])) {
+            $isAllowed = false;
+            foreach ($beacon['limitedToOffers'] as $limitedOffer) {
+                if ((string) $limitedOffer === $offer['id']) {
+                    $isAllowed = true;
+                }
+            }
+            if (!$isAllowed) {
+                echo 'Offer ' . $offer['id'] . ' is not allowed' . "\n";
+                continue;
+            }
+        }
+
         echo 'Looking at event for ' . $restaurant['name'] . ': '
             . $offer['discount'] . '% off'
             . ' on ' . $event['date']
