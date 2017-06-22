@@ -55,6 +55,10 @@ function deleteAllAttachments(BSONDocument $beacon): void {
     queueSlackMessage('Deleted all notifications for beacon "' . $beacon['name'] . '"');
 }
 
+function toBase64(array $data): string {
+    return base64_encode(json_encode($data, JSON_UNESCAPED_SLASHES));
+}
+
 function createAttachments(BSONDocument $beacon): void {
     global $lookAheadUntilDate, $config, $googleService;
 
@@ -125,19 +129,19 @@ function createAttachments(BSONDocument $beacon): void {
             'data' => [
                 'title' => $event['discount'] . '% off at ' . $restaurant['name'] . '!',
                 'url' => $config['urlShortenerBase'] . '/b/' . $restaurant['id'],
-                'targeting' => [
+                'targeting' => [[
                     'startDate' => $event['date'],
                     'endDate' => $event['date'],
                     'startTimeOfDay' => $event['startTime'],
                     'endTimeOfDay' => $event['endTime'],
                     'anyOfDaysOfWeek' => [(new DateTime($event['date']))->format('N')],
-                ],
+                ]],
             ],
             'restaurant' => $restaurant,
             'discount' => $event['discount'],
         ];
 
-        $beaconAttachment['base64Data'] = base64_encode(json_encode($beaconAttachment['data']));
+        $beaconAttachment['base64Data'] = toBase64($beaconAttachment['data']);
 
         $beaconAttachmentsToCreateOrKeep[] = $beaconAttachment;
     }
@@ -156,9 +160,9 @@ function createAttachments(BSONDocument $beacon): void {
         if ($alreadyExists) {
             echo 'Notification already exists for ' . $toCreateOrKeep['discount'] . '% off'
                 . ' at ' . $toCreateOrKeep['restaurant']['name']
-                . ' on ' . $toCreateOrKeep['data']['targeting']['startDate']
-                . ' at ' . $toCreateOrKeep['data']['targeting']['startTimeOfDay']
-                . '-' . $toCreateOrKeep['data']['targeting']['endTimeOfDay']
+                . ' on ' . $toCreateOrKeep['data']['targeting'][0]['startDate']
+                . ' at ' . $toCreateOrKeep['data']['targeting'][0]['startTimeOfDay']
+                . '-' . $toCreateOrKeep['data']['targeting'][0]['endTimeOfDay']
                 . ' for beacon "' . $beacon['friendlyName'] . '"'
                 . "\n";
             continue;
@@ -168,15 +172,15 @@ function createAttachments(BSONDocument $beacon): void {
             $beacon['name'],
             new Google_Service_Proximitybeacon_BeaconAttachment([
                 'namespacedType' => $toCreateOrKeep['namespacedType'],
-                'data' => base64_encode(json_encode($toCreateOrKeep['data'])),
+                'data' => toBase64($toCreateOrKeep['data']),
             ])
         );
         queueSlackMessage(
             'Created notification for ' . $toCreateOrKeep['discount'] . '% off'
                 . ' at ' . $toCreateOrKeep['restaurant']['name']
-                . ' on ' . $toCreateOrKeep['data']['targeting']['startDate']
-                . ' at ' . $toCreateOrKeep['data']['targeting']['startTimeOfDay']
-                . '-' . $toCreateOrKeep['data']['targeting']['endTimeOfDay']
+                . ' on ' . $toCreateOrKeep['data']['targeting'][0]['startDate']
+                . ' at ' . $toCreateOrKeep['data']['targeting'][0]['startTimeOfDay']
+                . '-' . $toCreateOrKeep['data']['targeting'][0]['endTimeOfDay']
                 . ' for beacon "' . $beacon['friendlyName'] . '"'
         );
     }
@@ -200,9 +204,9 @@ function createAttachments(BSONDocument $beacon): void {
         queueSlackMessage(
             'Deleted old notification for ' . $toCreateOrKeep['discount'] . '% off'
                 . ' at ' . $toCreateOrKeep['restaurant']['name']
-                . ' on ' . $toCreateOrKeep['data']['targeting']['startDate']
-                . ' at ' . $toCreateOrKeep['data']['targeting']['startTimeOfDay']
-                . '-' . $toCreateOrKeep['data']['targeting']['endTimeOfDay']
+                . ' on ' . $toCreateOrKeep['data']['targeting'][0]['startDate']
+                . ' at ' . $toCreateOrKeep['data']['targeting'][0]['startTimeOfDay']
+                . '-' . $toCreateOrKeep['data']['targeting'][0]['endTimeOfDay']
                 . ' for beacon "' . $beacon['friendlyName'] . '"'
         );
     }
