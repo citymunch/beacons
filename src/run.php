@@ -134,7 +134,7 @@ function createAttachments(BSONDocument $beacon): void {
                     'endDate' => $event['date'],
                     'startTimeOfDay' => $event['startTime'],
                     'endTimeOfDay' => $event['endTime'],
-                    'anyOfDaysOfWeek' => [(new DateTime($event['date']))->format('N')],
+                    'anyOfDaysOfWeek' => [(int) (new DateTime($event['date']))->format('N')],
                 ]],
             ],
             'restaurant' => $restaurant,
