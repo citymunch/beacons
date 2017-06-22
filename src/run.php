@@ -78,16 +78,27 @@ function createAttachments(BSONDocument $beacon): void {
         $restaurant = $row['restaurant'];
         $offer = $row['offer'];
 
+        echo 'Looking at event for ' . $restaurant['name'] . ': '
+            . $offer['discount'] . '% off'
+            . ' on ' . $event['date']
+            . ' at ' . $event['startTime']
+            . '-' . $event['endTime']
+            . "\n";
+
         if ($event['isActiveOnDate'] !== true) {
+            echo "Offer is not active\n";
             continue;
         }
         if ($event['hasEnded']) {
+            echo "Offer has ended\n";
             continue;
         }
         if ($event['coversRemaining'] === 0) {
+            echo "Offer has no covers remaining\n";
             continue;
         }
         if ($offer['type'] !== 'PERCENT_OFF_ANY_FOOD') {
+            echo "Offer is not PERCENT_OFF_ANY_FOOD\n";
             continue;
         }
 
@@ -130,6 +141,13 @@ function createAttachments(BSONDocument $beacon): void {
         }
 
         if ($alreadyExists) {
+            echo 'Notification already exists for ' . $toCreateOrKeep['discount'] . '% off'
+                . ' at ' . $toCreateOrKeep['restaurant']['name']
+                . ' on ' . $toCreateOrKeep['data']['targeting']['startDate']
+                . ' at ' . $toCreateOrKeep['data']['targeting']['startTimeOfDay']
+                . '-' . $toCreateOrKeep['data']['targeting']['endTimeOfDay']
+                . ' for beacon "' . $beacon['friendlyName'] . '"'
+                . "\n";
             continue;
         }
 
@@ -161,6 +179,7 @@ function createAttachments(BSONDocument $beacon): void {
         }
 
         if ($isToBeKept) {
+            echo 'Notification is to be kept: ' . $existing['attachmentName'] . "\n";
             continue;
         }
 
