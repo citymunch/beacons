@@ -109,6 +109,8 @@ function doCityMunchApiRequest(string $method, string $path, array $options = []
 function queueSlackMessage(string $message): void {
     global $slackMessageQueue;
     $slackMessageQueue[] = $message;
+
+    echo "Queued message for Slack: $message\n";
 }
 
 function postSlackMessageQueue(): void {

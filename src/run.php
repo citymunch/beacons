@@ -6,7 +6,7 @@ require_once __DIR__ . '/helpers.php';
 use MongoDB\Model\BSONDocument;
 
 $googleService = new Google_Service_Proximitybeacon(getGoogleClient());
-$beacons = $beaconsCollection->find([]);
+$beacons = $beaconsCollection->find([])->toArray();
 $slackMessageQueue = [];
 
 $lookAheadUntilDate = new DateTime();
@@ -18,12 +18,13 @@ foreach ($beacons as $beacon) {
     } catch (Exception $e) {
         queueSlackMessage($e->getMessage());
     }
-
-    postSlackMessageQueue();
 }
+postSlackMessageQueue();
 
 function updateBeacon(BSONDocument $beacon): void {
     global $googleService;
+
+    echo 'Updating beacon ' . $beacon['friendlyName'] . "\n";
 
     $googleObject = $googleService->beacons->get($beacon['name']);
 
@@ -96,10 +97,11 @@ function createAttachments(BSONDocument $beacon): void {
         }
 
         echo 'Looking at event for ' . $restaurant['name'] . ': '
-            . $offer['discount'] . '% off'
+            . $event['discount'] . '% off'
             . ' on ' . $event['date']
             . ' at ' . $event['startTime']
             . '-' . $event['endTime']
+            . ' - offer is ' . $offer['id']
             . "\n";
 
         if ($event['isActiveOnDate'] !== true) {
@@ -139,6 +141,7 @@ function createAttachments(BSONDocument $beacon): void {
             ],
             'restaurant' => $restaurant,
             'discount' => $event['discount'],
+            'offer' => $offer,
         ];
 
         $beaconAttachment['base64Data'] = toBase64($beaconAttachment['data']);
@@ -182,6 +185,7 @@ function createAttachments(BSONDocument $beacon): void {
                 . ' at ' . $toCreateOrKeep['data']['targeting'][0]['startTimeOfDay']
                 . '-' . $toCreateOrKeep['data']['targeting'][0]['endTimeOfDay']
                 . ' for beacon "' . $beacon['friendlyName'] . '"'
+                . ' - offer is ' . $toCreateOrKeep['offer']['id']
         );
     }
 
