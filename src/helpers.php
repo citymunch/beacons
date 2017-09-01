@@ -90,7 +90,7 @@ function doCityMunchApiRequest(string $method, string $path, array $options = []
         'headers' => [
             'Authorization' => 'Partner ' . $config['citymunchApiKey'],
             'User-Agent' => 'CM beacon manager',
-            'Accept' => 'application/vnd.citymunch.v14+json',
+            'Accept' => 'application/vnd.citymunch.v15+json',
         ],
         'http_errors' => false,
     ];
