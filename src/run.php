@@ -60,6 +60,10 @@ function toBase64(array $data): string {
     return base64_encode(json_encode($data, JSON_UNESCAPED_SLASHES));
 }
 
+function fromBase64(string $data): array {
+    return json_decode(base64_decode($data), true);
+}
+
 function createAttachments(BSONDocument $beacon): void {
     global $lookAheadUntilDate, $config, $googleService;
 
@@ -189,7 +193,7 @@ function createAttachments(BSONDocument $beacon): void {
         );
     }
 
-    // Check if any existing beacons need to be deleted.
+    // Check if any existing beacon attachments need to be deleted.
     foreach ($existingBeaconAttachments as $existing) {
         $isToBeKept = false;
         foreach ($beaconAttachmentsToCreateOrKeep as $toCreateOrKeep) {
@@ -205,12 +209,13 @@ function createAttachments(BSONDocument $beacon): void {
         }
 
         $googleService->beacons_attachments->delete($existing['attachmentName']);
+
+        $existingDecoded = fromBase64($existing['data']);
         queueSlackMessage(
-            'Deleted old notification for ' . $toCreateOrKeep['discount'] . '% off'
-                . ' at ' . $toCreateOrKeep['restaurant']['name']
-                . ' on ' . $toCreateOrKeep['data']['targeting'][0]['startDate']
-                . ' at ' . $toCreateOrKeep['data']['targeting'][0]['startTimeOfDay']
-                . '-' . $toCreateOrKeep['data']['targeting'][0]['endTimeOfDay']
+            'Deleted old notification "' . $existingDecoded['title'] . '"'
+                . ' on ' . $existingDecoded['targeting'][0]['startDate']
+                . ' at ' . $existingDecoded['targeting'][0]['startTimeOfDay']
+                . '-' . $existingDecoded['targeting'][0]['endTimeOfDay']
                 . ' for beacon "' . $beacon['friendlyName'] . '"'
         );
     }
